@@ -1221,6 +1221,14 @@ Zone::zonelet::zonelet(const zonelet& i)
         ::new(&u.rule_) std::string(i.u.rule_);
 }
 
+#if defined(_MSC_VER)
+Zone::zonelet& Zone::zonelet::operator=(const Zone::zonelet& )
+{
+    // TBD
+    return( *this );
+}
+#endif
+
 Zone::Zone(const std::string& s)
 {
     try

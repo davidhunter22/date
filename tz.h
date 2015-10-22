@@ -1,20 +1,19 @@
-#ifndef TZ_H
-#define TZ_H
+#pragma once
 
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2015 Howard Hinnant
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -65,6 +64,13 @@ Technically any OS may use the mapping process but currently only Windows does u
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+// Suppress warnings this header causes so that includers don't see them
+#if defined(_MSC_VER)
+   #pragma warning(push)
+   #pragma warning(disable:4251) // class needs to have dll-interface to be used by clients of struct
+   #pragma warning(disable:4146) // unary minus operator applied to unsigned type, result still unsigned
+#endif
 
 namespace date
 {
@@ -173,14 +179,14 @@ ambiguous_local_time::make_msg(std::chrono::time_point<std::chrono::system_clock
     using namespace date;
     std::ostringstream os;
     os << tp << " is ambiguous.  It could be\n"
-       << tp << ' ' << first_abbrev << " == " << tp - first_offset << " UTC or\n" 
+       << tp << ' ' << first_abbrev << " == " << tp - first_offset << " UTC or\n"
        << tp << ' ' << second_abbrev  << " == " << tp - second_offset  << " UTC";
     return os.str();
 }
 
 class Rule;
 
-struct Info
+struct DATE_DECL Info
 {
     second_point         begin;
     second_point         end;
@@ -189,10 +195,10 @@ struct Info
     std::string          abbrev;
 };
 
-std::ostream&
+DATE_DECL std::ostream&
 operator<<(std::ostream& os, const Info& r);
 
-class Zone
+class DATE_DECL Zone
 {
 private:
     struct zonelet;
@@ -350,7 +356,7 @@ Zone::to_sys_impl(std::chrono::time_point<std::chrono::system_clock,
     return tp_sys;
 }
 
-class Link
+class DATE_DECL Link
 {
 private:
     std::string name_;
@@ -372,7 +378,7 @@ inline bool operator> (const Link& x, const Link& y) {return   y < x;}
 inline bool operator<=(const Link& x, const Link& y) {return !(y < x);}
 inline bool operator>=(const Link& x, const Link& y) {return !(x < y);}
 
-class Leap
+class DATE_DECL Leap
 {
 private:
     second_point date_;
@@ -522,7 +528,7 @@ operator>=(const std::chrono::time_point<std::chrono::system_clock, Duration>& x
 // used to to support other os/native name conversions, not just windows,
 // and using the same generic names helps retain the connection to the
 // origin of the data that we are using.
-struct timezone_mapping
+struct DATE_DECL timezone_mapping
 {
     timezone_mapping(const char* other, const char* territory, const char* type)
         : other(other), territory(territory), type(type)
@@ -548,7 +554,7 @@ struct TZI
 };
 #endif
 
-struct timezone_info
+struct DATE_DECL timezone_info
 {
     timezone_info() = default;
     std::string timezone_id;
@@ -561,7 +567,7 @@ struct timezone_info
 
 #endif
 
-struct TZ_DB
+struct DATE_DECL TZ_DB
 {
     std::vector<Zone> zones;
     std::vector<Link> links;
@@ -572,7 +578,7 @@ struct TZ_DB
     std::vector<timezone_mapping> mappings;
     std::vector<timezone_info> native_zones;
 #endif
-    
+
     TZ_DB() = default;
     TZ_DB(TZ_DB&&) = default;
     TZ_DB& operator=(TZ_DB&&) = default;
@@ -580,11 +586,11 @@ struct TZ_DB
 
 std::ostream& operator<<(std::ostream& os, const TZ_DB& db);
 
-const TZ_DB& get_tzdb();
-const TZ_DB& reload_tzdb();
-const TZ_DB& reload_tzdb(const std::string& new_install);
+DATE_DECL const TZ_DB& get_tzdb();
+DATE_DECL const TZ_DB& reload_tzdb();
+DATE_DECL const TZ_DB& reload_tzdb(const std::string& new_install);
 
-const Zone* locate_zone(const std::string& tz_name);
+DATE_DECL const Zone* locate_zone(const std::string& tz_name);
 #ifdef TZ_TEST
 #ifdef _WIN32
 const Zone* locate_native_zone(const std::string& native_tz_name);
@@ -592,7 +598,7 @@ const Zone* locate_native_zone(const std::string& native_tz_name);
 #endif
 const Zone* current_zone();
 
-class utc_clock
+class DATE_DECL utc_clock
 {
 public:
     using duration                  = std::chrono::system_clock::duration;
@@ -656,4 +662,9 @@ utc_clock::utc_to_sys(std::chrono::time_point<utc_clock, Duration> t)
 
 }  // namespace date
 
-#endif  // TZ_H
+// Reset warnings
+#if defined(_MSC_VER)
+   #pragma warning(pop)
+#endif
+
+

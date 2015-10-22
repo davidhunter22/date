@@ -1,20 +1,19 @@
-#ifndef DATE_H
-#define DATE_H
+#pragma once
 
 // The MIT License (MIT)
-// 
+//
 // Copyright (c) 2015 Howard Hinnant
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -47,6 +46,14 @@ namespace date
 #  define CONSTDATA const
 #  define CONSTCD11
 #  define CONSTCD14
+    #if defined(date_EXPORTS)
+        #define DATE_DECL __declspec(dllexport)
+    #else
+        #define DATE_DECL __declspec(dllimport)
+    #endif
+   // Suppress warnings this header causes so that includers don't see them
+   #pragma warning(push)
+   #pragma warning(disable:4146) // unary minus operator applied to unsigned type, result still unsigned
 #elif __cplusplus >= 201402
 #  define CONSTDATA constexpr
 #  define CONSTCD11 constexpr
@@ -221,7 +228,7 @@ CONSTCD11 day  operator+(const days& x, const day&  y) noexcept;
 CONSTCD11 day  operator-(const day&  x, const days& y) noexcept;
 CONSTCD11 days operator-(const day&  x, const day&  y) noexcept;
 
-std::ostream& operator<<(std::ostream& os, const day& d);
+DATE_DECL std::ostream& operator<<(std::ostream& os, const day& d);
 
 // month
 
@@ -755,7 +762,7 @@ CONSTCD11 date::year operator "" _y(unsigned long long y) noexcept;
 // CONSTDATA date::month oct{10};
 // CONSTDATA date::month nov{11};
 // CONSTDATA date::month dec{12};
-// 
+//
 // CONSTDATA date::weekday sun{0u};
 // CONSTDATA date::weekday mon{1u};
 // CONSTDATA date::weekday tue{2u};
@@ -3584,4 +3591,7 @@ operator<<(std::ostream& os, const day_point& dp)
 
 }  // namespace date
 
-#endif  // DATE_H
+// Reset warnings
+#if defined(_MSC_VER)
+   #pragma warning(pop)
+#endif
