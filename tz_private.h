@@ -193,11 +193,8 @@ struct DATE_DECL Zone::zonelet
     ~zonelet();
     zonelet();
     zonelet(const zonelet& i);
-    #if defined(_MSC_VER)
-    zonelet& operator=(const zonelet&);
-    #else
+
     zonelet& operator=(const zonelet&) = delete;
-    #endif
 };
 
 }  // namespace date

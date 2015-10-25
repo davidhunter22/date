@@ -209,6 +209,12 @@ private:
 public:
     explicit Zone(const std::string& s);
 
+    Zone( const Zone& ) = delete;
+    Zone& operator=( const Zone& ) = delete;
+
+    Zone( Zone&& ) = default;
+    Zone& operator=( Zone&& ) = default;
+
     const std::string& name() const {return name_;}
     Info get_info(std::chrono::system_clock::time_point tp, tz timezone) const;
 
